@@ -1,12 +1,12 @@
 package com.tka.controller;
 
-import java.util.List;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import com.tka.entity.Patient;
 import com.tka.service.PatientService;
 
 @RestController
@@ -22,18 +22,18 @@ public class AdminPatientController {
 
 
     // Get all patients
-    @GetMapping
-    public ResponseEntity<List<Patient>> getAllPatients() {
-        List<Patient> patients = patientService.getAllPatients(); // CHANGED: getAllPatient → getAllPatients
-        return ResponseEntity.ok(patients);
-    }
+//    @GetMapping
+//    public ResponseEntity<List<Patient>> getAllPatients() {
+//        List<Patient> patients = patientService.getAllPatients(); // CHANGED: getAllPatient → getAllPatients
+//        return ResponseEntity.ok(patients);
+//    }
 
     // Get patient by ID
-    @GetMapping("/{id}")
-    public ResponseEntity<Patient> getPatientById(@PathVariable Long id) {
-        Patient patient = patientService.findPatientById(id);
-        return ResponseEntity.ok(patient);
-    }
+//    @GetMapping("/{id}")
+//    public ResponseEntity<Patient> getPatientById(@PathVariable Long id) {
+//        Patient patient = patientService.findPatientById(id);
+//        return ResponseEntity.ok(patient);
+//    }
 
     // Delete patient
     @DeleteMapping("/{id}")
