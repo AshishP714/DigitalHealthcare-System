@@ -64,6 +64,10 @@ public class Patient {
 	private BloodGroupType bloodGroup;
 	
 	@OneToOne
+    @JoinColumn(name = "user_id", unique = true)
+    private User user;
+	
+	@OneToOne
 	@JoinColumn(name = "patient_inturence_id")
 	@JsonIgnore
 	private Insurance insurance;

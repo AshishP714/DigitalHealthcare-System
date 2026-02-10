@@ -23,21 +23,42 @@ public class AuthService {
         this.jwtUtil = jwtUtil;
     }
 
-    public String register(RegisterRequestDTO request) {
+    // Admin can register users with any role
+    public String registerByAdmin(RegisterRequestDTO request) {
+        if (userRepository.existsByUserEmail(request.getEmail())) {
+            throw new RuntimeException("Email already registered");
+        }
 
         User user = new User();
         user.setUserName(request.getName());
         user.setUserEmail(request.getEmail());
+        user.setUserPassword(passwordEncoder.encode(request.getPassword()));
+        user.setRole(Role.valueOf(request.getRole())); // Admin can set any role
+        
+        userRepository.save(user);
+        
+        return "User registered successfully with role: " + request.getRole();
+    }
+
+    // Regular registration (public endpoint)
+    public String register(RegisterRequestDTO request) {
+        if (userRepository.existsByUserEmail(request.getEmail())) {
+            throw new RuntimeException("Email already registered");
+        }
+
+        User user = new User();
+        user.setUserName(request.getName());
+        user.setUserEmail(request.getEmail());
+//        user.setRole(request.getRole()); // FIXED: Removed valueOf(), getRole() already returns Role enum
         user.setRole(Role.valueOf(request.getRole()));
         user.setUserPassword(passwordEncoder.encode(request.getPassword()));
-
+        
         userRepository.save(user);
         
         return "User registered successfully";
     }
 
     public String login(LoginRequestDTO request) {
-
         User user = userRepository.findByUserEmail(request.getEmail())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 

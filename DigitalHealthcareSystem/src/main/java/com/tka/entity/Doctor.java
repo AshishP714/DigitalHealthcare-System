@@ -10,7 +10,9 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
 import jakarta.persistence.ManyToMany;
+import jakarta.persistence.OneToOne;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -37,6 +39,10 @@ public class Doctor {
 	
 	@Column(nullable = false , unique = true , length = 100)
 	private String email;
+	
+	@OneToOne
+    @JoinColumn(name = "user_id", unique = true)
+    private User user;
 	
 	@ManyToMany(mappedBy = "doctors")
 	@JsonIgnore

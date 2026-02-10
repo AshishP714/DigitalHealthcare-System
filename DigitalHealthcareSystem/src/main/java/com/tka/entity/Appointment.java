@@ -3,8 +3,12 @@ package com.tka.entity;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
+import com.tka.entity.type.AppointmentStatus;
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
@@ -44,4 +48,7 @@ public class Appointment {
 	@ManyToOne
 	@JoinColumn(nullable = false)
 	private Doctor doctor;
+	
+	@Enumerated(EnumType.STRING)
+	private AppointmentStatus status; 
 }

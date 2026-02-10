@@ -2,6 +2,7 @@ package com.tka.controller;
 
 import java.util.List;
 
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
@@ -19,28 +20,38 @@ public class AdminDoctorController {
         this.doctorService = doctorService;
     }
 
+    // Create doctor
     @PostMapping
-    public Doctor addDoctor(@RequestBody Doctor doctor) {
-        return doctorService.addNewDoctor(doctor);
+    public ResponseEntity<Doctor> addDoctor(@RequestBody Doctor doctor) {
+        Doctor created = doctorService.createDoctor(doctor); // CHANGED: addNewDoctor → createDoctor
+        return ResponseEntity.ok(created);
     }
 
+    // Get all doctors
     @GetMapping
-    public List<Doctor> getAllDoctors() {
-        return doctorService.getAllDoctor();
+    public ResponseEntity<List<Doctor>> getAllDoctors() {
+        List<Doctor> doctors = doctorService.getAllDoctors(); // CHANGED: getAllDoctor → getAllDoctors
+        return ResponseEntity.ok(doctors);
     }
 
+    // Get doctor by ID (you need to add this method to DoctorService)
     @GetMapping("/{id}")
-    public Doctor getDoctorById(@PathVariable Long id) {
-        return doctorService.getDoctorById(id);
+    public ResponseEntity<Doctor> getDoctorById(@PathVariable Long id) {
+        Doctor doctor = doctorService.getDoctorById(id); // You need to add this method
+        return ResponseEntity.ok(doctor);
     }
 
+    // Update doctor
     @PutMapping("/{id}")
-    public Doctor updateDoctor(@PathVariable Long id, @RequestBody Doctor updatedDoctor) {
-        return doctorService.updateDoctor(id, updatedDoctor);
+    public ResponseEntity<Doctor> updateDoctor(@PathVariable Long id, @RequestBody Doctor updatedDoctor) {
+        Doctor updated = doctorService.updateDoctor(id, updatedDoctor);
+        return ResponseEntity.ok(updated);
     }
 
+    // Delete doctor
     @DeleteMapping("/{id}")
-    public void deleteDoctor(@PathVariable Long id) {
+    public ResponseEntity<String> deleteDoctor(@PathVariable Long id) {
         doctorService.deleteDoctor(id);
+        return ResponseEntity.ok("Doctor deleted successfully");
     }
 }

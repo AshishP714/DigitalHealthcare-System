@@ -5,47 +5,70 @@ import java.util.List;
 import org.springframework.stereotype.Service;
 
 import com.tka.entity.Doctor;
+import com.tka.entity.User;
 import com.tka.repository.DoctorRepository;
 
 @Service
 public class DoctorService {
 
-	private final DoctorRepository doctorRepository;
+    private final DoctorRepository doctorRepository;
 
-	public DoctorService(DoctorRepository doctorRepository) {
-		this.doctorRepository = doctorRepository;
-	}
+    public DoctorService(DoctorRepository doctorRepository) {
+        this.doctorRepository = doctorRepository;
+    }
 
-	public Doctor addNewDoctor(Doctor doctor) {
-		return doctorRepository.save(doctor);
-	}
+    // Create doctor (Admin only)
+    public Doctor createDoctor(Doctor doctor) {
+        return doctorRepository.save(doctor);
+    }
+    
+    public Doctor getDoctorById(Long doctorId) {
+        return doctorRepository.findById(doctorId)
+                .orElseThrow(() -> new RuntimeException("Doctor not found with id: " + doctorId));
+    }
 
-	public List<Doctor> getAllDoctor() {
-		return doctorRepository.findAll();
-	}
+    // Update doctor (Admin only)
+    public Doctor updateDoctor(Long doctorId, Doctor doctor) {
+        Doctor existing = doctorRepository.findById(doctorId)
+                .orElseThrow(() -> new RuntimeException("Doctor not found"));
+        
+        existing.setName(doctor.getName());
+        existing.setSpecilization(doctor.getSpecilization());
+        existing.setEmail(doctor.getEmail());
+        
+        return doctorRepository.save(existing);
+    }
 
-	public Doctor getDoctorById(Long doctorId) {
-		return doctorRepository.findById(doctorId)
-				.orElseThrow(() -> new IllegalArgumentException("Doctor not found on id " + doctorId));
-	}
+    // Delete doctor (Admin only)
+    public void deleteDoctor(Long doctorId) {
+        if (!doctorRepository.existsById(doctorId)) {
+            throw new RuntimeException("Doctor not found");
+        }
+        doctorRepository.deleteById(doctorId);
+    }
 
-	public Doctor updateDoctor(Long doctorId, Doctor updateDoctor) {
+    // Update own profile (Doctor only)
+    public Doctor updateOwnProfile(Doctor doctor, User user) {
+        Doctor existing = doctorRepository.findByUser(user);
+        if (existing == null) {
+            throw new RuntimeException("Doctor profile not found");
+        }
+        
+        existing.setName(doctor.getName());
+        existing.setSpecilization(doctor.getSpecilization());
+        existing.setEmail(doctor.getEmail());
+        
+        return doctorRepository.save(existing);
+    }
 
-		Doctor existingDoctor = doctorRepository.findById(doctorId)
-				.orElseThrow(() -> new IllegalArgumentException("Doctor not found oon id " + doctorId));
+    // Get doctor by user ID
+    public Doctor getDoctorByUserId(Long userId) {
+        return doctorRepository.findByUser_UserId(userId)
+                .orElseThrow(() -> new RuntimeException("Doctor profile not found"));
+    }
 
-		existingDoctor.setName(updateDoctor.getName());
-		existingDoctor.setEmail(updateDoctor.getEmail());
-		existingDoctor.setSpecilization(updateDoctor.getSpecilization());
-
-		return doctorRepository.save(existingDoctor);
-	}
-
-	public void deleteDoctor(Long doctorId) {
-		if (doctorRepository.existsById(doctorId)) {
-			doctorRepository.deleteById(doctorId);
-		} else {
-			throw new IllegalArgumentException("Doctor not found on id " + doctorId);
-		}
-	}
+    // Get all doctors (accessible by all)
+    public List<Doctor> getAllDoctors() {
+        return doctorRepository.findAll();
+    }
 }
