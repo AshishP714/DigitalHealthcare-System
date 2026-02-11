@@ -3,52 +3,46 @@ package com.tka.entity;
 import java.time.LocalDate;
 import java.time.LocalTime;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.tka.entity.type.AppointmentStatus;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.EnumType;
-import jakarta.persistence.Enumerated;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
+import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
-import lombok.Getter;
+import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
-import lombok.ToString;
 
 @Entity
-@Getter
-@Setter
+@Table(name = "appointment")
+@Data
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString
 public class Appointment {
 
-	@Id
-	@GeneratedValue(strategy = GenerationType.IDENTITY)
-	private Long id;
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "appointment_id")
+    private Long appointmentId;
 
-	@Column(nullable = false)
-	private LocalDate appointmentDate;
+    @ManyToOne
+    @JoinColumn(name = "patient_id")
+    private Patient patient;
 
-	@Column(nullable = false)
-	private LocalTime appointmentTime;
+    @ManyToOne
+    @JoinColumn(name = "doctor_id")
+    private Doctor doctor;
 
-	@Column(length = 500)
-	private String reason;
+    @JsonFormat(pattern = "yyyy-MM-dd")
+    @Column(name = "appointment_date")
+    private LocalDate appointmentDate;
 
-	@ManyToOne
-	@JoinColumn(name = "patient_id", nullable = false)
-	private Patient patient;
+    @JsonFormat(pattern = "HH:mm:ss")
+    @Column(name = "appointment_time")
+    private LocalTime appointmentTime;
 
-	@ManyToOne
-	@JoinColumn(nullable = false)
-	private Doctor doctor;
-	
-	@Enumerated(EnumType.STRING)
-	private AppointmentStatus status; 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "status")
+    private AppointmentStatus status;
+
+    @Column(name = "reason")
+    private String reason;
 }
