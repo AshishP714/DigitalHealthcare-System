@@ -3,6 +3,7 @@ package com.tka.controller;
 import java.util.List;
 
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,6 +17,7 @@ import com.tka.dto.RegisterRequestDTO;
 import com.tka.entity.Appointment;
 import com.tka.entity.Doctor;
 import com.tka.entity.Patient;
+import com.tka.entity.User;
 import com.tka.service.AppointmentService;
 import com.tka.service.AuthService;
 import com.tka.service.DoctorService;
@@ -52,7 +54,7 @@ public class AdminController {
     // ===== DOCTOR MANAGEMENT =====
     
     // Create doctor
-    @PostMapping("/doctors")
+    @PostMapping("/doctor")
     public ResponseEntity<Doctor> createDoctor(@RequestBody Doctor doctor) {
         Doctor created = doctorService.createDoctor(doctor);
         return ResponseEntity.ok(created);
