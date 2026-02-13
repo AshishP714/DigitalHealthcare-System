@@ -36,6 +36,24 @@ public class AppointmentService {
             throw new RuntimeException("Patient profile not found. Please create your profile first.");
         }
         
+        // Validate doctor is assigned
+        if (appointment.getDoctor() == null || appointment.getDoctor().getId() == null) {
+            throw new RuntimeException("Doctor must be selected for appointment");
+        }
+        
+        // Check for double-booking
+        boolean isSlotTaken = appointmentRepository.existsByDoctorAndAppointmentDateAndAppointmentTime(
+            appointment.getDoctor(),
+            appointment.getAppointmentDate(),
+            appointment.getAppointmentTime()
+        );
+        
+        if (isSlotTaken) {
+            throw new RuntimeException(
+                "This time slot is already booked. Please choose another time."
+            );
+        }
+        
         appointment.setPatient(patient);
         appointment.setStatus(AppointmentStatus.PENDING);
         return appointmentRepository.save(appointment);

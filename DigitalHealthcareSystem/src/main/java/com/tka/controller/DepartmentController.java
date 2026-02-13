@@ -2,51 +2,68 @@ package com.tka.controller;
 
 import java.util.List;
 
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.web.bind.annotation.*;
 
 import com.tka.entity.Department;
+import com.tka.entity.Doctor;
 import com.tka.service.DepartmentService;
 
 @RestController
-@RequestMapping("/department")
+@RequestMapping("/departments")
 public class DepartmentController {
 
-	private final DepartmentService departmentService;
+    private final DepartmentService departmentService;
 
-	public DepartmentController(DepartmentService departmentService) {
-		this.departmentService = departmentService;
-	}
+    public DepartmentController(DepartmentService departmentService) {
+        this.departmentService = departmentService;
+    }
 
-	@PostMapping("/add-department")
-	public Department createDepartment(@RequestBody Department department) {
-		return departmentService.createDepartment(department);
-	}
+    // Get all departments (Public - for everyone to see)
+    @GetMapping
+    public ResponseEntity<List<Department>> getAllDepartments() {
+        List<Department> departments = departmentService.getAllDepartments();
+        return ResponseEntity.ok(departments);
+    }
 
-	@GetMapping("/{id}")
-	public Department getDepartmentById(@PathVariable("id") Long departmentId) {
-		return departmentService.getDepartmentById(departmentId);
-	}
+    // Get department by ID (Public)
+    @GetMapping("/{id}")
+    public ResponseEntity<Department> getDepartmentById(@PathVariable Long id) {
+        Department department = departmentService.getDepartmentById(id);
+        return ResponseEntity.ok(department);
+    }
 
-	@GetMapping("/get-All-department")
-	public List<Department> getAllDepartment() {
-		return departmentService.getAllDepartment();
-	}
+    // Get doctors by department (Public)
+    @GetMapping("/{id}/doctors")
+    public ResponseEntity<List<Doctor>> getDoctorsByDepartment(@PathVariable Long id) {
+        List<Doctor> doctors = departmentService.getDoctorsByDepartment(id);
+        return ResponseEntity.ok(doctors);
+    }
 
-	@PutMapping("/{id}")
-	public Department updateDepartment(@PathVariable("id") Long departmentId,
-			@RequestBody Department updatedDepartment) {
-		return departmentService.updateDepartment(departmentId, updatedDepartment);
-	}
+    // Create department (Admin only)
+    @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Department> createDepartment(@RequestBody Department department) {
+        Department created = departmentService.createDepartment(department);
+        return ResponseEntity.ok(created);
+    }
 
-	@DeleteMapping("/{id}")
-	public void deleteDepartment(@PathVariable("id") long departmentId) {
-		departmentService.deleteDepartment(departmentId);
-	}
+    // Update department (Admin only)
+    @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Department> updateDepartment(
+            @PathVariable Long id, 
+            @RequestBody Department department) {
+        Department updated = departmentService.updateDepartment(id, department);
+        return ResponseEntity.ok(updated);
+    }
+
+    // Delete department (Admin only)
+    @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<String> deleteDepartment(@PathVariable Long id) {
+        departmentService.deleteDepartment(id);
+        return ResponseEntity.ok("Department deleted successfully");
+    }
 }

@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.tka.dto.AuthResponseDTO;
 import com.tka.dto.LoginRequestDTO;
+import com.tka.dto.LoginResponseDTO;
 import com.tka.dto.RegisterRequestDTO;
 import com.tka.service.AuthService;
 
@@ -27,9 +28,8 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public ResponseEntity<AuthResponseDTO> login(@RequestBody LoginRequestDTO request) {
-
-        String token = authService.login(request);
-        return ResponseEntity.ok(new AuthResponseDTO(token));
+    public ResponseEntity<LoginResponseDTO> login(@RequestBody LoginRequestDTO request) {
+        LoginResponseDTO response = authService.login(request);
+        return ResponseEntity.ok(response);
     }
 }

@@ -4,6 +4,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.tka.dto.LoginRequestDTO;
+import com.tka.dto.LoginResponseDTO;
 import com.tka.dto.RegisterRequestDTO;
 import com.tka.entity.User;
 import com.tka.entity.type.Role;
@@ -58,7 +59,7 @@ public class AuthService {
         return "User registered successfully";
     }
 
-    public String login(LoginRequestDTO request) {
+    public LoginResponseDTO login(LoginRequestDTO request) {
         User user = userRepository.findByUserEmail(request.getEmail())
                 .orElseThrow(() -> new RuntimeException("User not found"));
 
@@ -66,6 +67,14 @@ public class AuthService {
             throw new RuntimeException("Invalid password");
         }
         
-        return jwtUtil.generateToken(user.getUsername(), user.getRole().name()); 
+        String token = jwtUtil.generateToken(user.getUsername(), user.getRole().name());
+        
+        return new LoginResponseDTO(
+            token,
+            user.getUserId(),
+            user.getUsername(),
+            user.getUserEmail(),
+            user.getRole().name()
+        );
     }
 }
