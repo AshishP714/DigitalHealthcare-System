@@ -5,22 +5,13 @@ import java.util.List;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.PutMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import com.tka.entity.Appointment;
 import com.tka.entity.User;
 import com.tka.service.AppointmentService;
 
 @RestController
-@RequestMapping("/appointment")
 public class AppointmentController {
 
     private final AppointmentService appointmentService;
@@ -29,10 +20,14 @@ public class AppointmentController {
         this.appointmentService = appointmentService;
     }
 
-    // PATIENT: Book appointment
-    @PostMapping("/create")
+    // ============================================
+    // PATIENT ENDPOINTS
+    // ============================================
+
+    // Patient: Book appointment
+    @PostMapping("/patient/appointments")
     @PreAuthorize("hasRole('PATIENT')")
-    public ResponseEntity<Appointment> createAppointment(
+    public ResponseEntity<Appointment> bookAppointment(
             @RequestBody Appointment appointment, 
             Authentication authentication) {
         User user = (User) authentication.getPrincipal();
@@ -40,8 +35,8 @@ public class AppointmentController {
         return ResponseEntity.ok(created);
     }
 
-    // PATIENT: View own appointments
-    @GetMapping("/my-appointments")
+    // Patient: View own appointments
+    @GetMapping("/patient/appointments")
     @PreAuthorize("hasRole('PATIENT')")
     public ResponseEntity<List<Appointment>> getMyAppointments(Authentication authentication) {
         User user = (User) authentication.getPrincipal();
@@ -49,8 +44,8 @@ public class AppointmentController {
         return ResponseEntity.ok(appointments);
     }
 
-    // PATIENT: Cancel own appointment
-    @DeleteMapping("/cancel/{id}")
+    // Patient: Cancel own appointment
+    @DeleteMapping("/patient/appointments/{id}")
     @PreAuthorize("hasRole('PATIENT')")
     public ResponseEntity<String> cancelMyAppointment(
             @PathVariable Long id, 
@@ -60,7 +55,11 @@ public class AppointmentController {
         return ResponseEntity.ok("Appointment cancelled successfully");
     }
 
-    // DOCTOR: View assigned appointments
+    // ============================================
+    // DOCTOR ENDPOINTS
+    // ============================================
+
+    // Doctor: View assigned appointments
     @GetMapping("/doctor/appointments")
     @PreAuthorize("hasRole('DOCTOR')")
     public ResponseEntity<List<Appointment>> getDoctorAppointments(Authentication authentication) {
@@ -69,39 +68,43 @@ public class AppointmentController {
         return ResponseEntity.ok(appointments);
     }
 
-    // DOCTOR: Update appointment status
-    @PutMapping("/doctor/{appointmentId}/status")
+    // Doctor: Update appointment status
+    @PutMapping("/doctor/appointments/{id}/status")
     @PreAuthorize("hasRole('DOCTOR')")
     public ResponseEntity<Appointment> updateAppointmentStatus(
-            @PathVariable Long appointmentId,
+            @PathVariable Long id,
             @RequestParam String status,
             Authentication authentication) {
         User user = (User) authentication.getPrincipal();
-        Appointment updated = appointmentService.updateAppointmentStatusByDoctor(appointmentId, status, user);
+        Appointment updated = appointmentService.updateAppointmentStatusByDoctor(id, status, user);
         return ResponseEntity.ok(updated);
     }
 
-    // DOCTOR: Get patient info for appointment
-    @GetMapping("/doctor/{appointmentId}/patient")
+    // Doctor: Get patient info for appointment
+    @GetMapping("/doctor/appointments/{id}/patient")
     @PreAuthorize("hasRole('DOCTOR')")
     public ResponseEntity<?> getPatientForAppointment(
-            @PathVariable Long appointmentId,
+            @PathVariable Long id,
             Authentication authentication) {
         User user = (User) authentication.getPrincipal();
-        Object patientInfo = appointmentService.getPatientInfoForDoctorAppointment(appointmentId, user);
+        Object patientInfo = appointmentService.getPatientInfoForDoctorAppointment(id, user);
         return ResponseEntity.ok(patientInfo);
     }
 
-    // ADMIN: Get all appointments
-    @GetMapping("/admin/all")
+    // ============================================
+    // ADMIN ENDPOINTS
+    // ============================================
+
+    // Admin: Get all appointments
+    @GetMapping("/admin/appointments")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<Appointment>> getAllAppointments() {
         List<Appointment> appointments = appointmentService.getAllAppointments();
         return ResponseEntity.ok(appointments);
     }
 
-    // ADMIN: Assign doctor to appointment
-    @PutMapping("/admin/{appointmentId}/assign-doctor/{doctorId}")
+    // Admin: Assign doctor to appointment
+    @PutMapping("/admin/appointments/{appointmentId}/doctor/{doctorId}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Appointment> assignDoctor(
             @PathVariable Long appointmentId,
@@ -110,8 +113,8 @@ public class AppointmentController {
         return ResponseEntity.ok(updated);
     }
 
-    // ADMIN: Delete any appointment
-    @DeleteMapping("/admin/{id}")
+    // Admin: Delete any appointment
+    @DeleteMapping("/admin/appointments/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> deleteAppointment(@PathVariable Long id) {
         appointmentService.deleteAppointment(id);

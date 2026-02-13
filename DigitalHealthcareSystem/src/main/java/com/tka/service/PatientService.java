@@ -13,63 +13,71 @@ import com.tka.repository.PatientRepository;
 @Service
 public class PatientService {
 
-    private final PatientRepository patientRepository;
+	private final PatientRepository patientRepository;
 
-    public PatientService(PatientRepository patientRepository) {
-        this.patientRepository = patientRepository;
-    }
+	public PatientService(PatientRepository patientRepository) {
+		this.patientRepository = patientRepository;
+	}
 
-    public Patient createPatientProfile(Patient patient, User user) {
-        Patient existing = patientRepository.findByUser(user);
-        if (existing != null) {
-            throw new RuntimeException("Patient profile already exists for this user");
-        }
-        
-        patient.setUser(user);
-        patient.setPatientEmail(user.getUserEmail());
-        return patientRepository.save(patient);
-    }
+	public Patient createPatientProfile(Patient patient, User user) {
+		Patient existing = patientRepository.findByUser(user);
+		if (existing != null) {
+			throw new RuntimeException("Patient profile already exists for this user");
+		}
 
-    // Update own profile
-    public Patient updateOwnProfile(Patient patient, User user) {
-        Patient existing = patientRepository.findByUser(user);
-        if (existing == null) {
-            throw new RuntimeException("Patient profile not found");
-        }
-        
-        // Update fields
-        existing.setPatientName(patient.getPatientName());
-        existing.setPatientBirthDate(patient.getPatientBirthDate());
-        existing.setPatientGender(patient.getPatientGender());
-        existing.setBloodGroup(patient.getBloodGroup());
-        
-        return patientRepository.save(existing);
-    }
+		patient.setUser(user);
+		patient.setPatientEmail(user.getUserEmail());
+		return patientRepository.save(patient);
+	}
 
-    // Get patient by user ID
-    public Patient getPatientByUserId(Long userId) {
-        return patientRepository.findByUser_UserId(userId)
-                .orElseThrow(() -> new RuntimeException("Patient profile not found"));
-    }
+	// Update own profile
+	public Patient updateOwnProfile(Patient patient, User user) {
+		Patient existing = patientRepository.findByUser(user);
+		if (existing == null) {
+			throw new RuntimeException("Patient profile not found");
+		}
 
-    // Admin or legacy methods
-    public Patient createNewPatient(Patient patient) {
-        return patientRepository.save(patient);
-    }
+		// Update fields
+		existing.setPatientName(patient.getPatientName());
+		existing.setPatientBirthDate(patient.getPatientBirthDate());
+		existing.setPatientGender(patient.getPatientGender());
+		existing.setBloodGroup(patient.getBloodGroup());
 
-    public Patient findPatientById(Long id) {
-        return patientRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("Patient not found"));
-    }
+		return patientRepository.save(existing);
+	}
 
-    public List<Patient> getAllPatients() {
-        return patientRepository.findAll();
-    }
-    
-    public void deletePatient(Long patientId) {
-        if (!patientRepository.existsById(patientId)) {
-            throw new RuntimeException("Patient not found");
-        }
-        patientRepository.deleteById(patientId);
-    }
+	// Get patient by user ID
+	public Patient getPatientByUserId(Long userId) {
+		return patientRepository.findByUser_UserId(userId)
+				.orElseThrow(() -> new RuntimeException("Patient profile not found"));
+	}
+
+	// Admin or legacy methods
+	public Patient createNewPatient(Patient patient) {
+		return patientRepository.save(patient);
+	}
+
+	public Patient findPatientById(Long id) {
+		return patientRepository.findById(id).orElseThrow(() -> new RuntimeException("Patient not found"));
+	}
+
+	public List<Patient> getAllPatients() {
+		return patientRepository.findAll();
+	}
+
+	public void deletePatient(Long patientId) {
+		if (!patientRepository.existsById(patientId)) {
+			throw new RuntimeException("Patient not found");
+		}
+		patientRepository.deleteById(patientId);
+	}
+
+	// Get patient by User object
+	public Patient getPatientByUser(User user) {
+		Patient patient = patientRepository.findByUser(user);
+		if (patient == null) {
+			throw new RuntimeException("Patient profile not found for user: " + user.getUserEmail());
+		}
+		return patient;
+	}
 }

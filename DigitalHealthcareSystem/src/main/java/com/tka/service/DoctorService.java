@@ -21,10 +21,20 @@ public class DoctorService {
     public Doctor createDoctor(Doctor doctor) {
         return doctorRepository.save(doctor);
     }
-    
+
+    // Get doctor by ID
     public Doctor getDoctorById(Long doctorId) {
         return doctorRepository.findById(doctorId)
                 .orElseThrow(() -> new RuntimeException("Doctor not found with id: " + doctorId));
+    }
+
+    // Get doctor by User object
+    public Doctor getDoctorByUser(User user) {
+        Doctor doctor = doctorRepository.findByUser(user);
+        if (doctor == null) {
+            throw new RuntimeException("Doctor profile not found for user: " + user.getUserEmail());
+        }
+        return doctor;
     }
 
     // Update doctor (Admin only)
