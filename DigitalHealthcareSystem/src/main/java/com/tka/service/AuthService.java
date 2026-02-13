@@ -67,13 +67,15 @@ public class AuthService {
             throw new RuntimeException("Invalid password");
         }
         
+        // Generate token (uses email as username)
         String token = jwtUtil.generateToken(user.getUsername(), user.getRole().name());
         
+        // Return response with ACTUAL NAME (not email)
         return new LoginResponseDTO(
             token,
             user.getUserId(),
-            user.getUsername(),
-            user.getUserEmail(),
+            user.getUserName(),     // ✅ This gets the actual name from user_name column
+            user.getUserEmail(),    // ✅ This gets the email
             user.getRole().name()
         );
     }
