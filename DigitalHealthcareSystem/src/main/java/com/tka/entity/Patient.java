@@ -9,6 +9,7 @@ import org.hibernate.annotations.CreationTimestamp;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.tka.entity.type.BloodGroupType;
 
+import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.EnumType;
@@ -67,10 +68,9 @@ public class Patient {
     @JoinColumn(name = "user_id", unique = true)
     private User user;
 	
-	@OneToOne
-	@JoinColumn(name = "patient_inturence_id")
-	@JsonIgnore
-	private Insurance insurance;
+	@OneToOne(mappedBy = "patient", cascade = CascadeType.ALL)
+    @JsonIgnore
+    private Insurance insurance;
 	
 	@OneToMany(mappedBy = "patient")
 	@JsonIgnore

@@ -1,6 +1,6 @@
 package com.tka.repository;
 
-import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -9,5 +9,7 @@ import com.tka.entity.Patient;
 
 public interface InsuranceRepository extends JpaRepository<Insurance, Long> {
 
-	List<Insurance> findByPatient(Patient patient);
+	Optional<Insurance> findByPatient(Patient patient);
+	
+	boolean existsByPatient(Patient patient);
 }

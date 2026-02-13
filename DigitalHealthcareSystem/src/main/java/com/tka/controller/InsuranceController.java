@@ -1,7 +1,5 @@
 package com.tka.controller;
 
-import java.util.List;
-
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
@@ -24,7 +22,7 @@ public class InsuranceController {
     // PATIENT ENDPOINTS
     // ============================================
 
-    // Patient: Add insurance
+    // Patient: Add insurance (only if they don't have one)
     @PostMapping("/patient/insurance")
     @PreAuthorize("hasRole('PATIENT')")
     public ResponseEntity<Insurance> addInsurance(
@@ -35,35 +33,37 @@ public class InsuranceController {
         return ResponseEntity.ok(created);
     }
 
-    // Patient: View own insurance
+    // Patient: View own insurance (returns single object, not array)
     @GetMapping("/patient/insurance")
     @PreAuthorize("hasRole('PATIENT')")
-    public ResponseEntity<List<Insurance>> getMyInsurance(Authentication authentication) {
+    public ResponseEntity<Insurance> getMyInsurance(Authentication authentication) {
         User user = (User) authentication.getPrincipal();
-        List<Insurance> insurance = insuranceService.getInsuranceForPatient(user);
+        Insurance insurance = insuranceService.getInsuranceForPatient(user);
+        
+        if (insurance == null) {
+            return ResponseEntity.ok(null);  // Or return 404 if you prefer
+        }
+        
         return ResponseEntity.ok(insurance);
     }
 
-    // Patient: Update own insurance
-    @PutMapping("/patient/insurance/{id}")
+    // Patient: Update own insurance (no ID needed)
+    @PutMapping("/patient/insurance")
     @PreAuthorize("hasRole('PATIENT')")
     public ResponseEntity<Insurance> updateInsurance(
-            @PathVariable Long id,
             @RequestBody Insurance insurance,
             Authentication authentication) {
         User user = (User) authentication.getPrincipal();
-        Insurance updated = insuranceService.updateInsurance(id, insurance, user);
+        Insurance updated = insuranceService.updateInsurance(insurance, user);
         return ResponseEntity.ok(updated);
     }
 
-    // Patient: Delete own insurance
-    @DeleteMapping("/patient/insurance/{id}")
+    // Patient: Delete own insurance (no ID needed)
+    @DeleteMapping("/patient/insurance")
     @PreAuthorize("hasRole('PATIENT')")
-    public ResponseEntity<String> deleteInsurance(
-            @PathVariable Long id,
-            Authentication authentication) {
+    public ResponseEntity<String> deleteInsurance(Authentication authentication) {
         User user = (User) authentication.getPrincipal();
-        insuranceService.deleteInsurance(id, user);
+        insuranceService.deleteInsurance(user);
         return ResponseEntity.ok("Insurance deleted successfully");
     }
 
@@ -71,19 +71,11 @@ public class InsuranceController {
     // ADMIN ENDPOINTS
     // ============================================
 
-    // Admin: View all insurance
-    @GetMapping("/admin/insurance")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<List<Insurance>> getAllInsurance() {
-        List<Insurance> insurance = insuranceService.getAllInsurance();
-        return ResponseEntity.ok(insurance);
-    }
-
     // Admin: View insurance by patient ID
     @GetMapping("/admin/patients/{patientId}/insurance")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<List<Insurance>> getInsuranceByPatient(@PathVariable Long patientId) {
-        List<Insurance> insurance = insuranceService.getInsuranceByPatientId(patientId);
+    public ResponseEntity<Insurance> getInsuranceByPatient(@PathVariable Long patientId) {
+        Insurance insurance = insuranceService.getInsuranceByPatientId(patientId);
         return ResponseEntity.ok(insurance);
     }
 }

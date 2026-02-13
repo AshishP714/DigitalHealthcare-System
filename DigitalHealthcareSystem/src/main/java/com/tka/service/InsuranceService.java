@@ -1,6 +1,6 @@
 package com.tka.service;
 
-import java.util.List;
+import java.util.Optional;
 
 import org.springframework.stereotype.Service;
 
@@ -22,69 +22,73 @@ public class InsuranceService {
         this.patientRepository = patientRepository;
     }
 
-    // Patient adds insurance to their profile
+    // Patient adds insurance to their profile (only if they don't have one)
     public Insurance addInsuranceForPatient(Insurance insurance, User user) {
         Patient patient = patientRepository.findByUser(user);
         if (patient == null) {
             throw new RuntimeException("Patient profile not found");
         }
         
+        // ✅ Check if patient already has insurance
+        if (insuranceRepository.existsByPatient(patient)) {
+            throw new RuntimeException("You already have insurance. Please update or delete the existing one.");
+        }
+        
+        // Set the patient
         insurance.setPatient(patient);
+        
         return insuranceRepository.save(insurance);
     }
 
-    // Patient views own insurance
-    public List<Insurance> getInsuranceForPatient(User user) {
+    // Patient views own insurance (returns single insurance, not list)
+    public Insurance getInsuranceForPatient(User user) {
         Patient patient = patientRepository.findByUser(user);
         if (patient == null) {
             throw new RuntimeException("Patient profile not found");
         }
-        return insuranceRepository.findByPatient(patient);
+        
+        return insuranceRepository.findByPatient(patient)
+                .orElse(null);  // Returns null if no insurance found
     }
 
     // Patient updates own insurance
-    public Insurance updateInsurance(Long insuranceId, Insurance insurance, User user) {
-        Insurance existing = insuranceRepository.findById(insuranceId)
-                .orElseThrow(() -> new RuntimeException("Insurance not found"));
-        
+    public Insurance updateInsurance(Insurance insurance, User user) {
         Patient patient = patientRepository.findByUser(user);
-        
-        // Check ownership
-        if (!existing.getPatient().getPatientId().equals(patient.getPatientId())) {
-            throw new RuntimeException("Unauthorized: You can only update your own insurance");
+        if (patient == null) {
+            throw new RuntimeException("Patient profile not found");
         }
         
-        existing.setProvider(insurance.getProvider());
+        // Find existing insurance
+        Insurance existing = insuranceRepository.findByPatient(patient)
+                .orElseThrow(() -> new RuntimeException("No insurance found to update. Please add insurance first."));
+        
+        // Update fields
         existing.setPolicyNumber(insurance.getPolicyNumber());
+        existing.setProvider(insurance.getProvider());
         existing.setValidUntil(insurance.getValidUntil());
         
         return insuranceRepository.save(existing);
     }
 
     // Patient deletes own insurance
-    public void deleteInsurance(Long insuranceId, User user) {
-        Insurance existing = insuranceRepository.findById(insuranceId)
-                .orElseThrow(() -> new RuntimeException("Insurance not found"));
-        
+    public void deleteInsurance(User user) {
         Patient patient = patientRepository.findByUser(user);
-        
-        // Check ownership
-        if (!existing.getPatient().getPatientId().equals(patient.getPatientId())) {
-            throw new RuntimeException("Unauthorized: You can only delete your own insurance");
+        if (patient == null) {
+            throw new RuntimeException("Patient profile not found");
         }
         
-        insuranceRepository.deleteById(insuranceId);
-    }
-
-    // Admin views all insurance
-    public List<Insurance> getAllInsurance() {
-        return insuranceRepository.findAll();
+        Insurance existing = insuranceRepository.findByPatient(patient)
+                .orElseThrow(() -> new RuntimeException("No insurance found to delete"));
+        
+        insuranceRepository.delete(existing);
     }
 
     // Admin views insurance by patient ID
-    public List<Insurance> getInsuranceByPatientId(Long patientId) {
+    public Insurance getInsuranceByPatientId(Long patientId) {
         Patient patient = patientRepository.findById(patientId)
                 .orElseThrow(() -> new RuntimeException("Patient not found"));
-        return insuranceRepository.findByPatient(patient);
+        
+        return insuranceRepository.findByPatient(patient)
+                .orElse(null);
     }
 }
