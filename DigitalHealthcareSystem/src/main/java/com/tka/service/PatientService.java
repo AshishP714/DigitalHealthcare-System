@@ -30,14 +30,12 @@ public class PatientService {
 		return patientRepository.save(patient);
 	}
 
-	// Update own profile
 	public Patient updateOwnProfile(Patient patient, User user) {
 		Patient existing = patientRepository.findByUser(user);
 		if (existing == null) {
 			throw new RuntimeException("Patient profile not found");
 		}
 
-		// Update fields
 		existing.setPatientName(patient.getPatientName());
 		existing.setPatientBirthDate(patient.getPatientBirthDate());
 		existing.setPatientGender(patient.getPatientGender());
@@ -46,13 +44,11 @@ public class PatientService {
 		return patientRepository.save(existing);
 	}
 
-	// Get patient by user ID
 	public Patient getPatientByUserId(Long userId) {
 		return patientRepository.findByUser_UserId(userId)
 				.orElseThrow(() -> new RuntimeException("Patient profile not found"));
 	}
 
-	// Admin or legacy methods
 	public Patient createNewPatient(Patient patient) {
 		return patientRepository.save(patient);
 	}
@@ -72,7 +68,6 @@ public class PatientService {
 		patientRepository.deleteById(patientId);
 	}
 
-	// Get patient by User object
 	public Patient getPatientByUser(User user) {
 		Patient patient = patientRepository.findByUser(user);
 		if (patient == null) {

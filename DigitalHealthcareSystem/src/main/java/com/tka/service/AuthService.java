@@ -24,7 +24,6 @@ public class AuthService {
         this.jwtUtil = jwtUtil;
     }
 
-    // Admin can register users with any role
     public String registerByAdmin(RegisterRequestDTO request) {
         if (userRepository.existsByUserEmail(request.getEmail())) {
             throw new RuntimeException("Email already registered");
@@ -34,14 +33,13 @@ public class AuthService {
         user.setUserName(request.getName());
         user.setUserEmail(request.getEmail());
         user.setUserPassword(passwordEncoder.encode(request.getPassword()));
-        user.setRole(Role.valueOf(request.getRole())); // Admin can set any role
+        user.setRole(Role.valueOf(request.getRole()));
         
         userRepository.save(user);
         
         return "User registered successfully with role: " + request.getRole();
     }
 
-    // Regular registration (public endpoint)
     public String register(RegisterRequestDTO request) {
         if (userRepository.existsByUserEmail(request.getEmail())) {
             throw new RuntimeException("Email already registered");
@@ -50,7 +48,7 @@ public class AuthService {
         User user = new User();
         user.setUserName(request.getName());
         user.setUserEmail(request.getEmail());
-//        user.setRole(request.getRole()); // FIXED: Removed valueOf(), getRole() already returns Role enum
+//        user.setRole(request.getRole());
         user.setRole(Role.valueOf(request.getRole()));
         user.setUserPassword(passwordEncoder.encode(request.getPassword()));
         
@@ -67,15 +65,13 @@ public class AuthService {
             throw new RuntimeException("Invalid password");
         }
         
-        // Generate token (uses email as username)
         String token = jwtUtil.generateToken(user.getUsername(), user.getRole().name());
         
-        // Return response with ACTUAL NAME (not email)
         return new LoginResponseDTO(
             token,
             user.getUserId(),
-            user.getUserName(),     // ✅ This gets the actual name from user_name column
-            user.getUserEmail(),    // ✅ This gets the email
+            user.getUserName(),
+            user.getUserEmail(),
             user.getRole().name()
         );
     }

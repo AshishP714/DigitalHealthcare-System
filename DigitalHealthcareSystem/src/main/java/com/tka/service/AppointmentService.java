@@ -29,19 +29,16 @@ public class AppointmentService {
         this.doctorRepository = doctorRepository;
     }
 
-    // Book appointment for patient
     public Appointment bookAppointmentForPatient(Appointment appointment, User user) {
         Patient patient = patientRepository.findByUser(user);
         if (patient == null) {
             throw new RuntimeException("Patient profile not found. Please create your profile first.");
         }
         
-        // Validate doctor is assigned
         if (appointment.getDoctor() == null || appointment.getDoctor().getId() == null) {
             throw new RuntimeException("Doctor must be selected for appointment");
         }
         
-        // Check for double-booking
         boolean isSlotTaken = appointmentRepository.existsByDoctorAndAppointmentDateAndAppointmentTime(
             appointment.getDoctor(),
             appointment.getAppointmentDate(),
@@ -59,7 +56,6 @@ public class AppointmentService {
         return appointmentRepository.save(appointment);
     }
 
-    // Get appointments for patient
     public List<Appointment> getAppointmentsForPatient(User user) {
         Patient patient = patientRepository.findByUser(user);
         if (patient == null) {
@@ -68,7 +64,6 @@ public class AppointmentService {
         return appointmentRepository.findByPatient(patient);
     }
 
-    // Cancel appointment by patient
     public void cancelAppointmentByPatient(Long appointmentId, User user) {
         Appointment appointment = appointmentRepository.findById(appointmentId)
                 .orElseThrow(() -> new RuntimeException("Appointment not found"));
@@ -81,7 +76,6 @@ public class AppointmentService {
         appointmentRepository.deleteById(appointmentId);
     }
 
-    // Get appointments for doctor
     public List<Appointment> getAppointmentsForDoctor(User user) {
         Doctor doctor = doctorRepository.findByUser(user);
         if (doctor == null) {
@@ -90,7 +84,6 @@ public class AppointmentService {
         return appointmentRepository.findByDoctor(doctor);
     }
 
-    // Update appointment status by doctor
     public Appointment updateAppointmentStatusByDoctor(Long appointmentId, String status, User user) {
         Appointment appointment = appointmentRepository.findById(appointmentId)
                 .orElseThrow(() -> new RuntimeException("Appointment not found"));
@@ -104,7 +97,6 @@ public class AppointmentService {
         return appointmentRepository.save(appointment);
     }
 
-    // Get patient info for doctor's appointment
     public Object getPatientInfoForDoctorAppointment(Long appointmentId, User user) {
         Appointment appointment = appointmentRepository.findById(appointmentId)
                 .orElseThrow(() -> new RuntimeException("Appointment not found"));
@@ -117,7 +109,6 @@ public class AppointmentService {
         return appointment.getPatient();
     }
 
-    // Admin methods
     public List<Appointment> getAllAppointments() {
         return appointmentRepository.findAll();
     }

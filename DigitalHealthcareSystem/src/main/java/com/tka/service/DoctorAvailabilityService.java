@@ -32,34 +32,29 @@ public class DoctorAvailabilityService {
         this.doctorRepository = doctorRepository;
     }
 
-    // Admin: Set doctor availability
     public DoctorAvailability setDoctorAvailability(DoctorAvailability availability) {
         return availabilityRepository.save(availability);
     }
 
-    // Get doctor's availability for a specific day
     public List<DoctorAvailability> getDoctorAvailability(Long doctorId) {
         Doctor doctor = doctorRepository.findById(doctorId)
                 .orElseThrow(() -> new RuntimeException("Doctor not found"));
         return availabilityRepository.findByDoctor(doctor);
     }
 
-    // Get available time slots for a doctor on a specific date
     public List<TimeSlotDTO> getAvailableSlots(Long doctorId, LocalDate date) {
         Doctor doctor = doctorRepository.findById(doctorId)
                 .orElseThrow(() -> new RuntimeException("Doctor not found"));
 
         DayOfWeek dayOfWeek = date.getDayOfWeek();
         
-        // Get doctor's availability for this day
         List<DoctorAvailability> availabilities = availabilityRepository
                 .findByDoctorAndDayOfWeek(doctor, dayOfWeek);
 
         if (availabilities.isEmpty()) {
-            return new ArrayList<>(); // Doctor not available on this day
+            return new ArrayList<>();
         }
 
-        // Get all booked appointments for this doctor on this date
         List<Appointment> bookedAppointments = appointmentRepository
                 .findByDoctorAndAppointmentDate(doctor, date);
 
@@ -67,7 +62,6 @@ public class DoctorAvailabilityService {
                 .map(Appointment::getAppointmentTime)
                 .collect(Collectors.toList());
 
-        // Generate time slots
         List<TimeSlotDTO> slots = new ArrayList<>();
         
         for (DoctorAvailability availability : availabilities) {
@@ -88,8 +82,7 @@ public class DoctorAvailabilityService {
 
         return slots;
     }
-
-    // Delete availability
+    
     public void deleteAvailability(Long availabilityId) {
         if (!availabilityRepository.existsById(availabilityId)) {
             throw new RuntimeException("Availability not found");

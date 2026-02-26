@@ -17,18 +17,15 @@ public class DoctorService {
         this.doctorRepository = doctorRepository;
     }
 
-    // Create doctor (Admin only)
     public Doctor createDoctor(Doctor doctor) {
         return doctorRepository.save(doctor);
     }
 
-    // Get doctor by ID
     public Doctor getDoctorById(Long doctorId) {
         return doctorRepository.findById(doctorId)
                 .orElseThrow(() -> new RuntimeException("Doctor not found with id: " + doctorId));
     }
 
-    // Get doctor by User object
     public Doctor getDoctorByUser(User user) {
         Doctor doctor = doctorRepository.findByUser(user);
         if (doctor == null) {
@@ -37,7 +34,6 @@ public class DoctorService {
         return doctor;
     }
 
-    // Update doctor (Admin only)
     public Doctor updateDoctor(Long doctorId, Doctor doctor) {
         Doctor existing = doctorRepository.findById(doctorId)
                 .orElseThrow(() -> new RuntimeException("Doctor not found"));
@@ -48,8 +44,7 @@ public class DoctorService {
         
         return doctorRepository.save(existing);
     }
-
-    // Delete doctor (Admin only)
+    
     public void deleteDoctor(Long doctorId) {
         if (!doctorRepository.existsById(doctorId)) {
             throw new RuntimeException("Doctor not found");
@@ -57,7 +52,6 @@ public class DoctorService {
         doctorRepository.deleteById(doctorId);
     }
 
-    // Update own profile (Doctor only)
     public Doctor updateOwnProfile(Doctor doctor, User user) {
         Doctor existing = doctorRepository.findByUser(user);
         if (existing == null) {
@@ -71,13 +65,11 @@ public class DoctorService {
         return doctorRepository.save(existing);
     }
 
-    // Get doctor by user ID
     public Doctor getDoctorByUserId(Long userId) {
         return doctorRepository.findByUser_UserId(userId)
                 .orElseThrow(() -> new RuntimeException("Doctor profile not found"));
     }
 
-    // Get all doctors (accessible by all)
     public List<Doctor> getAllDoctors() {
         return doctorRepository.findAll();
     }
