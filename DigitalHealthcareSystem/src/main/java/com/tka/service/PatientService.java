@@ -4,10 +4,8 @@ import java.util.List;
 
 import org.springframework.stereotype.Service;
 
-import com.tka.entity.Insurance;
 import com.tka.entity.Patient;
 import com.tka.entity.User;
-import com.tka.repository.InsuranceRepository;
 import com.tka.repository.PatientRepository;
 
 @Service
