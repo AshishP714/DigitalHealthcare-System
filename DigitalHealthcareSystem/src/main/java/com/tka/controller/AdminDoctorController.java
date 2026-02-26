@@ -25,55 +25,48 @@ public class AdminDoctorController {
         this.userRepository = userRepository;
     }
 
-    // Create doctor profile and link to user
     @PostMapping
     public ResponseEntity<?> addDoctor(@RequestBody CreateDoctorRequestDTO request) {
-        // Find user by email
+        
         User user = userRepository.findByUserEmail(request.getEmail())
                 .orElseThrow(() -> new RuntimeException(
                     "User not found with email: " + request.getEmail() + 
                     ". Please create a user with DOCTOR role first using /admin/users endpoint"
                 ));
         
-        // Check if user has DOCTOR role
         if (!user.getRole().name().equals("DOCTOR")) {
             return ResponseEntity.badRequest()
                     .body("User with email " + request.getEmail() + " does not have DOCTOR role");
         }
         
-        // Create doctor profile
         Doctor doctor = new Doctor();
         doctor.setName(request.getName());
         doctor.setSpecilization(request.getSpecilization());
         doctor.setEmail(request.getEmail());
-        doctor.setUser(user); // IMPORTANT: Link user to doctor
+        doctor.setUser(user);
         
         Doctor created = doctorService.createDoctor(doctor);
         return ResponseEntity.ok(created);
     }
 
-    // Get all doctors
     @GetMapping
     public ResponseEntity<List<Doctor>> getAllDoctors() {
         List<Doctor> doctors = doctorService.getAllDoctors();
         return ResponseEntity.ok(doctors);
     }
 
-    // Get doctor by ID
     @GetMapping("/{id}")
     public ResponseEntity<Doctor> getDoctorById(@PathVariable Long id) {
         Doctor doctor = doctorService.getDoctorById(id);
         return ResponseEntity.ok(doctor);
     }
 
-    // Update doctor
     @PutMapping("/{id}")
     public ResponseEntity<Doctor> updateDoctor(@PathVariable Long id, @RequestBody Doctor updatedDoctor) {
         Doctor updated = doctorService.updateDoctor(id, updatedDoctor);
         return ResponseEntity.ok(updated);
     }
 
-    // Delete doctor
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deleteDoctor(@PathVariable Long id) {
         doctorService.deleteDoctor(id);

@@ -19,12 +19,7 @@ public class AppointmentController {
     public AppointmentController(AppointmentService appointmentService) {
         this.appointmentService = appointmentService;
     }
-
-    // ============================================
-    // PATIENT ENDPOINTS
-    // ============================================
-
-    // Patient: Book appointment
+    
     @PostMapping("/patient/appointments")
     @PreAuthorize("hasRole('PATIENT')")
     public ResponseEntity<Appointment> bookAppointment(
@@ -35,7 +30,6 @@ public class AppointmentController {
         return ResponseEntity.ok(created);
     }
 
-    // Patient: View own appointments
     @GetMapping("/patient/appointments")
     @PreAuthorize("hasRole('PATIENT')")
     public ResponseEntity<List<Appointment>> getMyAppointments(Authentication authentication) {
@@ -44,7 +38,6 @@ public class AppointmentController {
         return ResponseEntity.ok(appointments);
     }
 
-    // Patient: Cancel own appointment
     @DeleteMapping("/patient/appointments/{id}")
     @PreAuthorize("hasRole('PATIENT')")
     public ResponseEntity<String> cancelMyAppointment(
@@ -55,11 +48,6 @@ public class AppointmentController {
         return ResponseEntity.ok("Appointment cancelled successfully");
     }
 
-    // ============================================
-    // DOCTOR ENDPOINTS
-    // ============================================
-
-    // Doctor: View assigned appointments
     @GetMapping("/doctor/appointments")
     @PreAuthorize("hasRole('DOCTOR')")
     public ResponseEntity<List<Appointment>> getDoctorAppointments(Authentication authentication) {
@@ -68,7 +56,6 @@ public class AppointmentController {
         return ResponseEntity.ok(appointments);
     }
 
-    // Doctor: Update appointment status
     @PutMapping("/doctor/appointments/{id}/status")
     @PreAuthorize("hasRole('DOCTOR')")
     public ResponseEntity<Appointment> updateAppointmentStatus(
@@ -80,7 +67,6 @@ public class AppointmentController {
         return ResponseEntity.ok(updated);
     }
 
-    // Doctor: Get patient info for appointment
     @GetMapping("/doctor/appointments/{id}/patient")
     @PreAuthorize("hasRole('DOCTOR')")
     public ResponseEntity<?> getPatientForAppointment(
@@ -91,11 +77,6 @@ public class AppointmentController {
         return ResponseEntity.ok(patientInfo);
     }
 
-    // ============================================
-    // ADMIN ENDPOINTS
-    // ============================================
-
-    // Admin: Get all appointments
     @GetMapping("/admin/appointments")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<Appointment>> getAllAppointments() {
@@ -103,7 +84,6 @@ public class AppointmentController {
         return ResponseEntity.ok(appointments);
     }
 
-    // Admin: Assign doctor to appointment
     @PutMapping("/admin/appointments/{appointmentId}/doctor/{doctorId}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Appointment> assignDoctor(
@@ -113,7 +93,6 @@ public class AppointmentController {
         return ResponseEntity.ok(updated);
     }
 
-    // Admin: Delete any appointment
     @DeleteMapping("/admin/appointments/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> deleteAppointment(@PathVariable Long id) {

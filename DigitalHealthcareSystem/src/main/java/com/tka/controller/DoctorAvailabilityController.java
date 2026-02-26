@@ -22,7 +22,6 @@ public class DoctorAvailabilityController {
         this.availabilityService = availabilityService;
     }
 
-    // Get doctor's availability schedule (Public - for patients)
     @GetMapping("/doctor/{doctorId}")
     public ResponseEntity<List<DoctorAvailability>> getDoctorAvailability(
             @PathVariable Long doctorId) {
@@ -30,7 +29,6 @@ public class DoctorAvailabilityController {
         return ResponseEntity.ok(availability);
     }
 
-    // Get available time slots for a specific date (Public - for patients)
     @GetMapping("/doctor/{doctorId}/slots")
     public ResponseEntity<List<TimeSlotDTO>> getAvailableSlots(
             @PathVariable Long doctorId,
@@ -39,7 +37,6 @@ public class DoctorAvailabilityController {
         return ResponseEntity.ok(slots);
     }
 
-    // Admin: Set doctor availability
     @PostMapping("/admin")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<DoctorAvailability> setDoctorAvailability(
@@ -48,7 +45,6 @@ public class DoctorAvailabilityController {
         return ResponseEntity.ok(created);
     }
 
-    // Admin: Delete availability
     @DeleteMapping("/admin/{id}")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<String> deleteAvailability(@PathVariable Long id) {

@@ -18,11 +18,6 @@ public class InsuranceController {
         this.insuranceService = insuranceService;
     }
 
-    // ============================================
-    // PATIENT ENDPOINTS
-    // ============================================
-
-    // Patient: Add insurance (only if they don't have one)
     @PostMapping("/patient/insurance")
     @PreAuthorize("hasRole('PATIENT')")
     public ResponseEntity<Insurance> addInsurance(
@@ -33,7 +28,6 @@ public class InsuranceController {
         return ResponseEntity.ok(created);
     }
 
-    // Patient: View own insurance (returns single object, not array)
     @GetMapping("/patient/insurance")
     @PreAuthorize("hasRole('PATIENT')")
     public ResponseEntity<Insurance> getMyInsurance(Authentication authentication) {
@@ -41,13 +35,12 @@ public class InsuranceController {
         Insurance insurance = insuranceService.getInsuranceForPatient(user);
         
         if (insurance == null) {
-            return ResponseEntity.ok(null);  // Or return 404 if you prefer
+            return ResponseEntity.ok(null);
         }
         
         return ResponseEntity.ok(insurance);
     }
 
-    // Patient: Update own insurance (no ID needed)
     @PutMapping("/patient/insurance")
     @PreAuthorize("hasRole('PATIENT')")
     public ResponseEntity<Insurance> updateInsurance(
@@ -58,7 +51,6 @@ public class InsuranceController {
         return ResponseEntity.ok(updated);
     }
 
-    // Patient: Delete own insurance (no ID needed)
     @DeleteMapping("/patient/insurance")
     @PreAuthorize("hasRole('PATIENT')")
     public ResponseEntity<String> deleteInsurance(Authentication authentication) {
@@ -67,11 +59,6 @@ public class InsuranceController {
         return ResponseEntity.ok("Insurance deleted successfully");
     }
 
-    // ============================================
-    // ADMIN ENDPOINTS
-    // ============================================
-
-    // Admin: View insurance by patient ID
     @GetMapping("/admin/patients/{patientId}/insurance")
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Insurance> getInsuranceByPatient(@PathVariable Long patientId) {

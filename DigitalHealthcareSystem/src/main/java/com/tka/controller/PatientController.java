@@ -26,7 +26,6 @@ public class PatientController {
         this.doctorService = doctorService;
     }
 
-    // Create patient profile
     @PostMapping("/profile")
     public ResponseEntity<Patient> createProfile(
             @RequestBody Patient patient, 
@@ -36,7 +35,6 @@ public class PatientController {
         return ResponseEntity.ok(created);
     }
 
-    // Get own profile
     @GetMapping("/profile")
     public ResponseEntity<Patient> getOwnProfile(Authentication authentication) {
         User user = (User) authentication.getPrincipal();
@@ -44,7 +42,6 @@ public class PatientController {
         return ResponseEntity.ok(patient);
     }
 
-    // Update own profile
     @PutMapping("/profile")
     public ResponseEntity<Patient> updateOwnProfile(
             @RequestBody Patient patient, 
@@ -54,7 +51,6 @@ public class PatientController {
         return ResponseEntity.ok(updated);
     }
 
-    // View all doctors
     @GetMapping("/doctors")
     public ResponseEntity<List<Doctor>> getAllDoctors() {
         List<Doctor> doctors = doctorService.getAllDoctors();

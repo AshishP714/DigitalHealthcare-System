@@ -20,7 +20,6 @@ public class DoctorController {
         this.doctorService = doctorService;
     }
 
-    // Get own profile
     @GetMapping("/profile")
     public ResponseEntity<Doctor> getOwnProfile(Authentication authentication) {
         User user = (User) authentication.getPrincipal();
@@ -28,7 +27,6 @@ public class DoctorController {
         return ResponseEntity.ok(doctor);
     }
 
-    // Update own profile
     @PutMapping("/profile")
     public ResponseEntity<Doctor> updateOwnProfile(
             @RequestBody Doctor doctor, 

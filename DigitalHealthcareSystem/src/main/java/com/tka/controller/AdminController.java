@@ -21,7 +21,6 @@ public class AdminController {
         this.authService = authService;
     }
 
-    // Admin creates user with any role
     @PostMapping("/users")
     public ResponseEntity<String> createUser(@RequestBody RegisterRequestDTO request) {
         String result = authService.registerByAdmin(request);

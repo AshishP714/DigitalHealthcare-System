@@ -20,22 +20,6 @@ public class AdminPatientController {
         this.patientService = patientService;
     }
 
-
-    // Get all patients
-//    @GetMapping
-//    public ResponseEntity<List<Patient>> getAllPatients() {
-//        List<Patient> patients = patientService.getAllPatients(); // CHANGED: getAllPatient → getAllPatients
-//        return ResponseEntity.ok(patients);
-//    }
-
-    // Get patient by ID
-//    @GetMapping("/{id}")
-//    public ResponseEntity<Patient> getPatientById(@PathVariable Long id) {
-//        Patient patient = patientService.findPatientById(id);
-//        return ResponseEntity.ok(patient);
-//    }
-
-    // Delete patient
     @DeleteMapping("/{id}")
     public ResponseEntity<String> deletePatient(@PathVariable Long id) {
         patientService.deletePatient(id); // You need to add this method to PatientService
