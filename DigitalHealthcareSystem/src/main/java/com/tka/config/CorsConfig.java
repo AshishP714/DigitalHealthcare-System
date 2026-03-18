@@ -25,7 +25,7 @@ public class CorsConfig {
             "http://localhost:8081"     
         ));
         
-        
+        config.addAllowedHeader("*");
         
         config.setAllowedMethods(Arrays.asList(
             "GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH"
