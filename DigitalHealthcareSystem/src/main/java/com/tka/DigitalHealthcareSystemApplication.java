@@ -7,6 +7,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 public class DigitalHealthcareSystemApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(DigitalHealthcareSystemApplication.class, args);	
+		SpringApplication.run(DigitalHealthcareSystemApplication.class, args);
+		System.err.println("Application started...");	
 	}
 }
