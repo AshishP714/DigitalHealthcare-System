@@ -8,6 +8,6 @@ public class DigitalHealthcareSystemApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(DigitalHealthcareSystemApplication.class, args);
-		System.err.println("Application started...");	
+		System.err.println("Degital Healthcare System application started...");	
 	}
 }
